@@ -1,0 +1,8 @@
+﻿  stdafx.cpp
+  DevHelperTest.cpp
+    正在创建库 C:\Users\jiewu\documents\visual studio 2015\Projects\CUDATest\Release\DevHelperTest.lib 和对象 C:\Users\jiewu\documents\visual studio 2015\Projects\CUDATest\Release\DevHelperTest.exp
+  正在生成代码
+  All 1160 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  已完成代码的生成
+  DevHelperTest.vcxproj -> C:\Users\jiewu\documents\visual studio 2015\Projects\CUDATest\Release\DevHelperTest.exe
+  DevHelperTest.vcxproj -> C:\Users\jiewu\documents\visual studio 2015\Projects\CUDATest\Release\DevHelperTest.pdb (Full PDB)
