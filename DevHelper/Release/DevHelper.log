@@ -1,6 +1,0 @@
-﻿  stdafx.cpp
-  DevHelper.cpp
-  cl_version.h: CL_TARGET_OPENCL_VERSION is not defined. Defaulting to 220 (OpenCL 2.2)
-DevHelper.cpp(169): warning C4244: “=”: 从“cl::detail::param_traits<cl::detail::cl_device_info,4112>::param_type”转换到“std::size_t”，可能丢失数据
-  dllmain.cpp
-  DevHelper.vcxproj -> C:\Users\jiewu\documents\visual studio 2015\Projects\CUDATest\Release\DevHelper.lib
