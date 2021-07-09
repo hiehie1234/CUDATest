@@ -9,10 +9,11 @@
 #define CL_HPP_MINIMUM_OPENCL_VERSION 120
 #include "CL/cl2.hpp"
 #include "DevHelper.h"
+#include "cuda_runtime.h"
 
 namespace dev
 {
-namespace clhelp
+namespace help
 {
 int getVersion()
 {
@@ -195,5 +196,75 @@ void CLHelp::enumDevices(std::map<string, DeviceDescriptor>& _DevicesCollection)
 	}
 };
 
+int CUDAHelp::getNumDevices()
+{
+	int deviceCount;
+	cudaError_t err = cudaGetDeviceCount(&deviceCount);
+	if (err == cudaSuccess)
+		return deviceCount;
+
+	if (err == cudaErrorInsufficientDriver)
+	{
+		int driverVersion = 0;
+		cudaDriverGetVersion(&driverVersion);
+		if (driverVersion == 0)
+			std::cerr << "CUDA Error : No CUDA driver found" << std::endl;
+		else
+			std::cerr << "CUDA Error : Insufficient CUDA driver " << std::to_string(driverVersion)
+			<< std::endl;
+	}
+	else
+	{
+		std::cerr << "CUDA Error : " << cudaGetErrorString(err) << std::endl;
+	}
+
+	return 0;
+}
+void CUDAHelp::enumDevices(std::map<string, DeviceDescriptor>& _DevicesCollection)
+{
+	int numDevices = getNumDevices();
+
+	for (int i = 0; i < numDevices; i++)
+	{
+		string uniqueId;
+		ostringstream s;
+		DeviceDescriptor deviceDescriptor;
+		cudaDeviceProp props;
+
+		try
+		{
+			size_t freeMem, totalMem;
+			CUDA_SAFE_CALL(cudaGetDeviceProperties(&props, i));
+			CUDA_SAFE_CALL(cudaMemGetInfo(&freeMem, &totalMem));
+			s << setw(2) << setfill('0') << hex << props.pciBusID << ":" << setw(2)
+				<< props.pciDeviceID << ".0";
+			uniqueId = s.str();
+
+			if (_DevicesCollection.find(uniqueId) != _DevicesCollection.end())
+				deviceDescriptor = _DevicesCollection[uniqueId];
+			else
+				deviceDescriptor = DeviceDescriptor();
+
+			deviceDescriptor.name = string(props.name);
+			deviceDescriptor.cuDetected = true;
+			deviceDescriptor.uniqueId = uniqueId;
+			deviceDescriptor.type = DeviceTypeEnum::Gpu;
+			deviceDescriptor.cuDeviceIndex = i;
+			deviceDescriptor.cuDeviceOrdinal = i;
+			deviceDescriptor.cuName = string(props.name);
+			deviceDescriptor.totalMemory = props.totalGlobalMem;
+			deviceDescriptor.cuCompute =
+				(to_string(props.major) + "." + to_string(props.minor));
+			deviceDescriptor.cuComputeMajor = props.major;
+			deviceDescriptor.cuComputeMinor = props.minor;
+
+			_DevicesCollection[uniqueId] = deviceDescriptor;
+		}
+		catch (const cuda_runtime_error& _e)
+		{
+			std::cerr << _e.what() << std::endl;
+		}
+	}
+}
 } // namespace dev
 } // namespace help
